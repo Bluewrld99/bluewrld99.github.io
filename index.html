@@ -1,14 +1,23 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>My First Website</title>
-</head>
-<body>
-
-    <h1>Welcome to My Website</h1>
-    <p>This is my first paragraph on the web!</p>
+<section class="card">
+    <h2>Hydraulic Force Calculator</h2>
+    <p>Calculate output force based on system pressure and piston area.</p>
     
-    <a href="https://www.google.com">Click here to visit Google</a>
+    <label>Pressure (Pascals):</label><br>
+    <input type="number" id="pressure" placeholder="e.g. 1000000"><br><br>
+    
+    <label>Piston Area (m²):</label><br>
+    <input type="number" id="area" placeholder="e.g. 0.005"><br><br>
+    
+    <button onclick="calculateForce()" style="background:#3498db; color:white; border:none; padding:10px 20px; cursor:pointer;">Calculate Force</button>
+    
+    <h3 id="result">Result: -- N</h3>
 
-</body>
-</html>
+    <script>
+        function calculateForce() {
+            let p = document.getElementById('pressure').value;
+            let a = document.getElementById('area').value;
+            let force = p * a;
+            document.getElementById('result').innerHTML = "Result: " + force.toLocaleString() + " N";
+        }
+    </script>
+</section>
