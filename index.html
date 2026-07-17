@@ -1,23 +1,476 @@
-<section class="card">
-    <h2>Hydraulic Force Calculator</h2>
-    <p>Calculate output force based on system pressure and piston area.</p>
-    
-    <label>Pressure (Pascals):</label><br>
-    <input type="number" id="pressure" placeholder="e.g. 1000000"><br><br>
-    
-    <label>Piston Area (m²):</label><br>
-    <input type="number" id="area" placeholder="e.g. 0.005"><br><br>
-    
-    <button onclick="calculateForce()" style="background:#3498db; color:white; border:none; padding:10px 20px; cursor:pointer;">Calculate Force</button>
-    
-    <h3 id="result">Result: -- N</h3>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Fullback — World Football, Every Matchday</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #0E1B14;
+    --panel: #16261C;
+    --panel-2: #1C2E22;
+    --ink: #EDEDE3;
+    --muted: #8A9A8F;
+    --line: #2A3D30;
+    --floodlight: #F4C542;
+    --turf: #4FA06A;
+    --red-card: #C0503C;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Source Serif 4', Georgia, serif;
+    line-height:1.5;
+  }
+  a{color:inherit;}
+  .display{
+    font-family:'Bebas Neue', sans-serif;
+    letter-spacing:0.02em;
+  }
+  .mono{
+    font-family:'IBM Plex Mono', monospace;
+  }
 
-    <script>
-        function calculateForce() {
-            let p = document.getElementById('pressure').value;
-            let a = document.getElementById('area').value;
-            let force = p * a;
-            document.getElementById('result').innerHTML = "Result: " + force.toLocaleString() + " N";
-        }
-    </script>
-</section>
+  /* ---------- Ticker ---------- */
+  .ticker-wrap{
+    background:var(--panel-2);
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+    white-space:nowrap;
+    position:sticky;
+    top:0;
+    z-index:50;
+  }
+  .ticker{
+    display:inline-block;
+    padding:9px 0;
+    animation: scroll-left 38s linear infinite;
+  }
+  .ticker span{
+    display:inline-block;
+    padding:0 28px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--muted);
+    border-right:1px solid var(--line);
+  }
+  .ticker span b{ color:var(--floodlight); font-weight:500; }
+  @keyframes scroll-left{
+    0%{ transform:translateX(0); }
+    100%{ transform:translateX(-50%); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ticker{ animation:none; }
+  }
+
+  /* ---------- Header ---------- */
+  header.site{
+    max-width:1120px;
+    margin:0 auto;
+    padding:44px 24px 28px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:12px;
+  }
+  .logo{
+    font-family:'Bebas Neue', sans-serif;
+    font-size:42px;
+    letter-spacing:0.03em;
+    color:var(--ink);
+  }
+  .logo b{ color:var(--floodlight); }
+  nav.site a{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    text-decoration:none;
+    color:var(--muted);
+    margin-left:24px;
+    transition:color .15s ease;
+  }
+  nav.site a:hover, nav.site a:focus-visible{ color:var(--floodlight); }
+
+  /* ---------- Pitch divider (signature element) ---------- */
+  .pitch-line{
+    max-width:1120px;
+    margin:0 auto;
+    padding:0 24px;
+  }
+  .pitch-line .row{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+  .pitch-line .row::before,
+  .pitch-line .row::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--line);
+  }
+  .pitch-line .dot{
+    width:9px; height:9px;
+    border:1px solid var(--turf);
+    border-radius:50%;
+    flex-shrink:0;
+  }
+  .pitch-line .label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    max-width:1120px;
+    margin:0 auto;
+    padding:40px 24px 56px;
+    display:grid;
+    grid-template-columns:1.4fr 1fr;
+    gap:40px;
+  }
+  .hero .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--floodlight);
+    margin-bottom:14px;
+    display:block;
+  }
+  .hero h1{
+    font-family:'Bebas Neue', sans-serif;
+    font-weight:400;
+    font-size:clamp(40px, 6vw, 72px);
+    line-height:0.98;
+    letter-spacing:0.01em;
+    margin:0 0 20px;
+  }
+  .hero p.dek{
+    font-size:18px;
+    color:var(--muted);
+    max-width:52ch;
+    margin:0 0 24px;
+  }
+  .hero .byline{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+  }
+  .hero .byline b{ color:var(--ink); }
+
+  .hero-side{
+    border-left:1px solid var(--line);
+    padding-left:32px;
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+  }
+  .score-card{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  .score-card .teams{ color:var(--ink); }
+  .score-card .score{ color:var(--floodlight); font-size:16px; }
+  .score-card .comp{ display:block; color:var(--muted); font-size:11px; margin-top:3px; letter-spacing:0.06em; text-transform:uppercase;}
+
+  /* ---------- Section headings ---------- */
+  .section-head{
+    max-width:1120px;
+    margin:0 auto;
+    padding:56px 24px 24px;
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+  }
+  .section-head h2{
+    font-family:'Bebas Neue', sans-serif;
+    font-weight:400;
+    font-size:32px;
+    letter-spacing:0.02em;
+    margin:0;
+  }
+  .section-head .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--muted);
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+  }
+
+  /* ---------- Article grid ---------- */
+  .grid{
+    max-width:1120px;
+    margin:0 auto;
+    padding:0 24px 24px;
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  article.card{
+    background:var(--bg);
+    padding:28px 24px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    transition:background .15s ease;
+  }
+  article.card:hover{ background:var(--panel); }
+  .card .tag-row{
+    display:flex;
+    justify-content:space-between;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--turf);
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+  }
+  .card .tag-row .time{ color:var(--muted); }
+  .card h3{
+    font-family:'Source Serif 4', serif;
+    font-size:20px;
+    font-weight:700;
+    line-height:1.25;
+    margin:0;
+  }
+  .card p{
+    font-size:14.5px;
+    color:var(--muted);
+    margin:0;
+  }
+  .card .read{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--floodlight);
+    text-decoration:none;
+    margin-top:auto;
+    padding-top:6px;
+  }
+
+  /* ---------- Table (league table styled block) ---------- */
+  .table-wrap{
+    max-width:1120px;
+    margin:0 auto;
+    padding:0 24px 64px;
+  }
+  table.league{
+    width:100%;
+    border-collapse:collapse;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  table.league th{
+    text-align:left;
+    font-size:11px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+    padding:10px 12px;
+    border-bottom:1px solid var(--line);
+  }
+  table.league td{
+    padding:12px;
+    border-bottom:1px solid var(--line);
+    color:var(--ink);
+  }
+  table.league tr:hover td{ background:var(--panel); }
+  table.league td.pos{ color:var(--muted); }
+  table.league td.pts{ color:var(--floodlight); font-weight:500; }
+  table.league th:last-child, table.league td:last-child{ text-align:right; }
+
+  /* ---------- Footer ---------- */
+  footer{
+    max-width:1120px;
+    margin:0 auto;
+    padding:40px 24px 60px;
+    display:flex;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:16px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--muted);
+  }
+
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--floodlight);
+    outline-offset:2px;
+  }
+
+  @media (max-width:860px){
+    .hero{ grid-template-columns:1fr; }
+    .hero-side{ border-left:none; border-top:1px solid var(--line); padding-left:0; padding-top:24px; }
+    .grid{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="ticker-wrap" aria-hidden="true">
+    <div class="ticker">
+      <span>ARGENTINA <b>2–1</b> BRAZIL — FT</span>
+      <span>MAN CITY <b>0–0</b> LIVERPOOL — 63'</span>
+      <span>REAL MADRID <b>3–2</b> BARCELONA — FT</span>
+      <span>BAYERN <b>1–1</b> DORTMUND — 78'</span>
+      <span>SENEGAL <b>2–0</b> MOROCCO — FT</span>
+      <span>ARGENTINA <b>2–1</b> BRAZIL — FT</span>
+      <span>MAN CITY <b>0–0</b> LIVERPOOL — 63'</span>
+      <span>REAL MADRID <b>3–2</b> BARCELONA — FT</span>
+      <span>BAYERN <b>1–1</b> DORTMUND — 78'</span>
+      <span>SENEGAL <b>2–0</b> MOROCCO — FT</span>
+    </div>
+  </div>
+
+  <header class="site">
+    <div class="logo">THE FULL<b>BACK</b></div>
+    <nav class="site">
+      <a href="#latest">Latest</a>
+      <a href="#transfers">Transfers</a>
+      <a href="#table">Table</a>
+      <a href="#about">About</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div>
+      <span class="eyebrow">Matchday Report</span>
+      <h1>Ninety Minutes Is Never Enough</h1>
+      <p class="dek">A second-half collapse, a goalkeeper's redemption, and the away end that never stopped singing — how last night's fixtures reshaped the run-in across three continents.</p>
+      <div class="byline"><b>Dispatch</b> · Filed pitchside · 6 min read</div>
+    </div>
+    <div class="hero-side">
+      <div class="score-card">
+        <div class="teams">Argentina <span class="mono">vs</span> Brazil<span class="comp">Friendly · Buenos Aires</span></div>
+        <div class="score">2–1</div>
+      </div>
+      <div class="score-card">
+        <div class="teams">Man City <span class="mono">vs</span> Liverpool<span class="comp">League · Etihad Stadium</span></div>
+        <div class="score">0–0<span style="color:var(--muted); font-size:11px;"> · 63'</span></div>
+      </div>
+      <div class="score-card">
+        <div class="teams">Real Madrid <span class="mono">vs</span> Barcelona<span class="comp">Clásico · Bernabéu</span></div>
+        <div class="score">3–2</div>
+      </div>
+      <div class="score-card">
+        <div class="teams">Bayern <span class="mono">vs</span> Dortmund<span class="comp">Bundesliga · Allianz Arena</span></div>
+        <div class="score">1–1<span style="color:var(--muted); font-size:11px;"> · 78'</span></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="pitch-line"><div class="row"><div class="dot"></div><span class="label">Kickoff</span><div class="dot"></div></div></div>
+
+  <div id="latest" class="section-head">
+    <h2>Latest Headlines</h2>
+    <span class="tag">Updated every matchday</span>
+  </div>
+  <div class="grid">
+    <article class="card">
+      <div class="tag-row"><span>Premier League</span><span class="time">2h ago</span></div>
+      <h3>The Midfield Press That's Quietly Winning Games</h3>
+      <p>Why the sides sitting highest in the table are also the ones pressing earliest — and what it costs them by minute 70.</p>
+      <a class="read" href="#">Read the piece →</a>
+    </article>
+    <article class="card">
+      <div class="tag-row"><span>Serie A</span><span class="time">4h ago</span></div>
+      <h3>A Back Three Learns to Attack</h3>
+      <p>The tactical tweak turning a defensive system into the league's most inventive source of overloads.</p>
+      <a class="read" href="#">Read the piece →</a>
+    </article>
+    <article class="card">
+      <div class="tag-row"><span>International</span><span class="time">6h ago</span></div>
+      <h3>The Qualifiers Nobody's Watching Yet</h3>
+      <p>Three federations, three different rebuilds, and the young squads who could crash the next tournament.</p>
+      <a class="read" href="#">Read the piece →</a>
+    </article>
+    <article class="card">
+      <div class="tag-row"><span>La Liga</span><span class="time">9h ago</span></div>
+      <h3>The Set-Piece Coach Every Club Wants</h3>
+      <p>Inside the specialist role that's gone from afterthought to the most contested hire of the summer.</p>
+      <a class="read" href="#">Read the piece →</a>
+    </article>
+    <article class="card">
+      <div class="tag-row"><span>Bundesliga</span><span class="time">11h ago</span></div>
+      <h3>Youth Academies Are Getting Faster</h3>
+      <p>A look at how sports science is shaving years off development timelines — and the debate it's sparked.</p>
+      <a class="read" href="#">Read the piece →</a>
+    </article>
+    <article class="card">
+      <div class="tag-row"><span>Opinion</span><span class="time">1d ago</span></div>
+      <h3>In Defence of the Boring Draw</h3>
+      <p>A case for why 0–0 might be the most honest scoreline in football, and why we undersell it.</p>
+      <a class="read" href="#">Read the piece →</a>
+    </article>
+  </div>
+
+  <div class="pitch-line"><div class="row"><div class="dot"></div><span class="label">Half-Time</span><div class="dot"></div></div></div>
+
+  <div id="transfers" class="section-head">
+    <h2>Transfer Notebook</h2>
+    <span class="tag">Rumour, confirmed, denied</span>
+  </div>
+  <div class="grid">
+    <article class="card">
+      <div class="tag-row"><span>Confirmed</span><span class="time">Today</span></div>
+      <h3>Winger's Move Ends a Three-Window Saga</h3>
+      <p>The medical is done, the shirt number is picked — how the deal finally came together after two collapsed bids.</p>
+      <a class="read" href="#">Read the piece →</a>
+    </article>
+    <article class="card">
+      <div class="tag-row"><span>Rumour</span><span class="time">Today</span></div>
+      <h3>The Loan Deal Both Clubs Want Quietly</h3>
+      <p>Neither side is confirming it, but the structure of the fee suggests talks are further along than admitted.</p>
+      <a class="read" href="#">Read the piece →</a>
+    </article>
+    <article class="card">
+      <div class="tag-row"><span>Analysis</span><span class="time">Yesterday</span></div>
+      <h3>What the Fee Actually Buys You Now</h3>
+      <p>Transfer fees keep climbing — we broke down what separates a bargain from a gamble this window.</p>
+      <a class="read" href="#">Read the piece →</a>
+    </article>
+  </div>
+
+  <div class="pitch-line"><div class="row"><div class="dot"></div><span class="label">Full Time</span><div class="dot"></div></div></div>
+
+  <div id="table" class="section-head">
+    <h2>League Table</h2>
+    <span class="tag">Sample standings</span>
+  </div>
+  <div class="table-wrap">
+    <table class="league">
+      <thead>
+        <tr><th>Pos</th><th>Club</th><th>P</th><th>GD</th><th>Pts</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="pos">1</td><td>Northgate United</td><td>28</td><td>+34</td><td class="pts">67</td></tr>
+        <tr><td class="pos">2</td><td>Real Alameda</td><td>28</td><td>+29</td><td class="pts">64</td></tr>
+        <tr><td class="pos">3</td><td>FC Vantergrove</td><td>28</td><td>+22</td><td class="pts">59</td></tr>
+        <tr><td class="pos">4</td><td>Halden Rovers</td><td>28</td><td>+18</td><td class="pts">55</td></tr>
+        <tr><td class="pos">5</td><td>Sporting Merano</td><td>28</td><td>+11</td><td class="pts">51</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer id="about">
+    <div>THE FULLBACK — a demo football blog, ready for your own scores, teams, and stories.</div>
+    <div>Built with care · No two matchdays alike</div>
+  </footer>
+
+</body>
+</html>
